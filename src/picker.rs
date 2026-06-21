@@ -167,7 +167,7 @@ impl EntrySource for FsSource {
                 .collect(),
             Err(_) => Vec::new(),
         };
-        entries.sort_by(|a, b| a.label.to_lowercase().cmp(&b.label.to_lowercase()));
+        entries.sort_by_key(|entry| entry.label.to_lowercase());
         entries
     }
 }

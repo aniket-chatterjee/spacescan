@@ -1,11 +1,11 @@
 # Screenshot And Demo Capture
 
-README uses the brand assets in `images/` today, and the archive packages copy
-those assets into the release bundle. Native Windows `.ico` embedding is later
-installer polish for archive-free distribution; derive it from
-`images/galaxy.svg` when that packaging stage starts so the repo icon and
-binary icon stay consistent. Before tagging a public release, refresh visual
-proof of the actual app with these captures:
+README uses the brand assets in `images/` and the preview screenshots in
+`images/screenshots/`. Native Windows `.ico` embedding is later installer
+polish for archive-free distribution; derive it from `images/galaxy.svg` when
+that packaging stage starts so the repo icon and binary icon stay consistent.
+Before tagging a public release, refresh visual proof of the actual app with
+these captures:
 
 - Windows Terminal TUI browser on a small fixture directory.
 - Reclaim view showing review-oriented wording, not a destructive action.

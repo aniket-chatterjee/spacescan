@@ -12,6 +12,15 @@ Fast parallel disk-usage analyzer with a terminal UI for finding what is taking 
   <img src="images/galaxy3.svg" alt="spacescan brand image" width="560">
 </p>
 
+## Screenshots
+
+<p align="center">
+  <img src="images/screenshots/Screenshot2.png" alt="spacescan scan-location picker overlay" width="300">
+  <img src="images/screenshots/Screenshot3.png" alt="spacescan scan progress in a terminal" width="300">
+  <img src="images/screenshots/Screenshot1.png" alt="spacescan TUI browser showing directory sizes and file type details" width="300">
+  <img src="images/screenshots/Screenshot4.png" alt="spacescan delete choice modal with Trash and permanent delete options" width="300">
+</p>
+
 ## Install
 
 ```powershell

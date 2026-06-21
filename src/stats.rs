@@ -82,7 +82,7 @@ pub fn top_files_in(node: &Node, base: &Path, n: usize, metric: Metric) -> Vec<(
     let mut path = base.to_path_buf();
     collect_top(node, &mut path, n, metric, &mut heap);
     let mut v: Vec<(PathBuf, u64)> = heap.into_iter().map(|Reverse((s, p))| (p, s)).collect();
-    v.sort_by(|a, b| b.1.cmp(&a.1));
+    v.sort_by_key(|entry| Reverse(entry.1));
     v
 }
 
