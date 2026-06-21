@@ -1572,12 +1572,13 @@ fn draw_delete_progress(f: &mut Frame, d: &Deleting, area: Rect) {
             ),
         )
     } else {
+        let activity = match d.mode {
+            DeleteMode::Trash => "Recycle Bin operation in progress",
+            DeleteMode::Permanent => "Filesystem delete in progress",
+        };
         (
             indeterminate_meter(elapsed, width, bar_color),
-            format!(
-                "Recycle Bin operation in progress  elapsed {}",
-                format_elapsed(elapsed)
-            ),
+            format!("{activity}  elapsed {}", format_elapsed(elapsed)),
         )
     };
     let lines = vec![
