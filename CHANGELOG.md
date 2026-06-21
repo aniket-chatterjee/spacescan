@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 - Unreleased
+## 0.0.1 - 2026-06-21
 
 - Added the Windows-first `spacescan` CLI/TUI for scanning disk usage, browsing
   large directories, exporting JSON/CSV, and reviewing reclaimable space.
