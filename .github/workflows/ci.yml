@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Format
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --all-targets
+      - name: Build release
+        run: cargo build --release
+      - name: Package Windows archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $packageName = "spacescan-windows-x86_64"
+          $outRoot = "dist"
+          $packageDir = Join-Path $outRoot $packageName
+          $archive = Join-Path $outRoot "$packageName.zip"
+          $projectFiles = @("README.md", "LICENSE", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md")
+          New-Item -ItemType Directory -Force $outRoot | Out-Null
+          Remove-Item -LiteralPath $packageDir -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path @($packageDir, (Join-Path $packageDir "docs"), (Join-Path $packageDir "images")) | Out-Null
+          Copy-Item -LiteralPath target\release\spacescan.exe -Destination $packageDir
+          Copy-Item -LiteralPath $projectFiles -Destination $packageDir
+          Copy-Item -Path docs\* -Destination (Join-Path $packageDir "docs") -Recurse
+          Copy-Item -Path images\* -Destination (Join-Path $packageDir "images") -Recurse
+          Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+          Compress-Archive -Path $packageDir -DestinationPath $archive
+      - name: Compile benchmarks
+        run: cargo bench --no-run
+      - name: License metadata
+        shell: pwsh
+        run: |
+          $metadata = cargo metadata --format-version 1 | ConvertFrom-Json
+          $blocked = $metadata.packages | Where-Object { $_.license -and $_.license -match "(^|[^A-Za-z])(AGPL|GPL|LGPL)([^A-Za-z]|$)" }
+          if ($blocked) {
+            $names = ($blocked | ForEach-Object { "$($_.name) ($($_.license))" }) -join ", "
+            throw "Packages with blocked license tokens: $names"
+          }
+      - name: Package contents
+        run: cargo package --list
+      - name: Publish dry-run
+        run: cargo publish --dry-run
+
+  smoke:
+    name: Smoke ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test --all-targets
+      - name: Package Linux archive
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -euo pipefail
+          cargo build --release
+          package_name="spacescan-linux-x86_64"
+          out_root="dist"
+          package_dir="$out_root/$package_name"
+          archive="$out_root/$package_name.tar.gz"
+          rm -rf "$package_dir"
+          mkdir -p "$package_dir/docs" "$package_dir/images"
+          cp target/release/spacescan "$package_dir/"
+          cp README.md LICENSE CHANGELOG.md CONTRIBUTING.md SECURITY.md "$package_dir/"
+          cp -R docs/. "$package_dir/docs/"
+          cp -R images/. "$package_dir/images/"
+          rm -f "$archive"
+          tar -C "$out_root" -czf "$archive" "$package_name"

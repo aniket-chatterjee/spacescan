@@ -1,0 +1,11 @@
+/target
+*.exe
+*.o
+*.pdb
+spacescan-*.json
+spacescan-*.csv
+scan-report*.txt
+spacescan-sizeof*
+criterion/
+benchmark-results/
+dist/
